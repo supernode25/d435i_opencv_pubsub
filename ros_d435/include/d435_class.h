@@ -1,5 +1,4 @@
 #include <ros/ros.h>
-#include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/Image.h>
 #include <opencv2/highgui/highgui.hpp>
@@ -9,24 +8,22 @@ class D435Image
 {
     int  esc_Waitkey;
     ros::NodeHandle node;
-    image_transport::ImageTransport it;
-    image_transport::Subscriber image_sub;
-    image_transport::Subscriber test_image_sub;
-    image_transport::Publisher image_pub;
-    // ROS형태의 이미지 변환 image_transport 사용
-
+    ros::Subscriber image_sub;   
+    ros::Subscriber test_image_sub; 
+    ros::Publisher image_pub;   
 public:
-    D435Image() : it(node) //리스트로 초기화
-        {
-            image_sub = it.subscribe("/camera/color/image_raw",10,&D435Image::ImageCallback,this);
-            // d435i의 topic으로부터 raw image를 받는 subscriber 
-            image_pub = it.advertise("/ByoungJin_image",10);
-            // sensor_msgs::Image로 받은 raw_image를 본인 이름의 topic으로 publishing 하는 publisher
-            test_image_sub = it.subscribe("/jeonggi_image",10,&D435Image::TestImageCallback,this);
-            // 다른 사람이 d435i의 raw image를 publishing하고 있는 publisher의 topic을 subscribe 하는 subscriber
-        }
+    D435Image()
+    {          
+      image_sub = node.subscribe("/camera/color/image_raw",10,&D435Image::ImageCallback,this);
+      // d435i의 토픽으로부터 이미지를 받는 subscribe
+      image_pub = node.advertise<sensor_msgs::Image>("/ByoungJin_image",10);
+      // d435i 이미지 토픽을 subscribe한 것을 publish
+      test_image_sub = node.subscribe("/ByoungJin_image",10,&D435Image::TestImageCallback,this);
+      // 다른사람의 카메라의 토픽으로부터 이미지를 받는 subscribe
 
-    ~D435Image()   {    }
+    }
+
+    ~D435Image()   { }
 
 
 void Gaussian_Blur(cv::Mat image)
@@ -71,7 +68,5 @@ void TestImageCallback(const sensor_msgs::Image::ConstPtr& img_sub)
 
 
 
-  //sensor_msgs::Image test_image = *test_img_sub;
-  // raw이미지의 형태로 받음
-  // opencv의 구조체와 연동시킬 것이면 cv_bridge, CvImage를 사용하여 형 변환 
+
   
