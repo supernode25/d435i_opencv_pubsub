@@ -1,0 +1,10 @@
+<launch>
+
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch" />
+
+    <node name="d435_img_node" pkg="ros_d435" type="d435_img_node" output="screen" >
+        <!-- <env name="ROS_MASTER_URI" value="http://192.168.0.4:11311" />
+        <env name= "ROS_HOSTNAME" value="192.168.0.4" /> -->
+    </node>
+
+</launch>
